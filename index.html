@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 1: My New School - Ôn tập Ngữ pháp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: Tôi đã thiết kế ứng dụng này với cấu trúc theo thẻ (tab-based) gồm 4 phần chính: "Thì Hiện Tại Đơn", "Trạng Từ Tần Suất", "Phát Âm", và "Luyện Tập". Cấu trúc này cho phép người dùng dễ dàng chuyển đổi giữa các chủ đề, tập trung vào từng phần kiến thức cụ thể mà không cần phải cuộn qua một trang dài. Cách tiếp cận này giúp chia nhỏ thông tin, tạo ra một lộ trình học tập linh hoạt và có định hướng, từ việc học lý thuyết đến việc áp dụng vào bài tập thực hành, tối ưu hóa trải nghiệm và hiệu quả học tập. -->
+    <!-- Visualization & Content Choices: 
+    - Thì Hiện Tại Đơn: Goal: Inform -> Presentation: Bảng biểu HTML có cấu trúc rõ ràng -> Interaction: Không cần, tập trung vào sự rõ ràng -> Justification: Bảng biểu là cách tốt nhất để trình bày các quy tắc chia động từ phức tạp một cách hệ thống.
+    - Trạng Từ Tần Suất: Goal: Compare/Inform -> Presentation: Biểu đồ cột ngang tương tác (Chart.js) -> Interaction: Người dùng có thể nhấp vào từng cột để xem chi tiết ví dụ và quy tắc vị trí của trạng từ tương ứng -> Justification: Biểu đồ trực quan hóa mức độ tần suất hiệu quả hơn nhiều so với bảng tĩnh, và tương tác nhấp chuột tạo ra sự khám phá chủ động.
+    - Phát Âm: Goal: Inform -> Presentation: Các thẻ (card) thông tin riêng biệt cho mỗi âm, sử dụng HTML/Tailwind -> Interaction: Giao diện sạch sẽ, tập trung vào việc đọc và ghi nhớ -> Justification: Thẻ thông tin giúp cô đọng các quy tắc và dấu hiệu nhận biết cho từng âm, dễ dàng cho việc ôn tập.
+    - Luyện Tập: Goal: Reinforce -> Presentation: Các bài tập điền vào chỗ trống và phân loại tương tác -> Interaction: Người dùng nhập câu trả lời, nút "Kiểm Tra" sẽ cho phản hồi ngay lập tức (đúng/sai), nút "Làm Lại" để xóa và thử lại -> Justification: Tương tác tức thì giúp học sinh tự đánh giá và củng cố kiến thức một cách hiệu quả.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+        }
+        .tab-btn.active {
+            color: #D97706; /* amber-600 */
+            border-bottom-color: #D97706;
+        }
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 450px;
+            max-height: 500px;
+        }
+        .exercise-input {
+            border: 1px solid #D1D5DB;
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            transition: border-color 0.2s;
+        }
+        .exercise-input:focus {
+            outline: none;
+            border-color: #D97706;
+        }
+        .exercise-input.correct {
+            border-color: #16A34A; /* green-600 */
+            background-color: #F0FDF4; /* green-50 */
+        }
+        .exercise-input.incorrect {
+            border-color: #DC2626; /* red-600 */
+            background-color: #FEF2F2; /* red-50 */
+        }
+        .feedback-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .feedback-text.correct {
+            color: #15803D; /* green-700 */
+        }
+        .feedback-text.incorrect {
+            color: #B91C1C; /* red-700 */
+        }
+        .sort-word {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800">Unit 1: My New School</h1>
+            <p class="text-xl text-amber-700 mt-2">LANGUAGE FOCUS</p>
+        </header>
+
+        <nav class="flex justify-center border-b border-gray-200 mb-8">
+            <button class="tab-btn active py-4 px-6 text-lg font-semibold" data-tab="grammar">Thì Hiện Tại Đơn</button>
+            <button class="tab-btn py-4 px-6 text-lg font-semibold" data-tab="adverbs">Trạng Từ Tần Suất</button>
+            <button class="tab-btn py-4 px-6 text-lg font-semibold" data-tab="pronunciation">Phát Âm</button>
+            <button class="tab-btn py-4 px-6 text-lg font-semibold" data-tab="practice">Luyện Tập</button>
+        </nav>
+
+        <main>
+            <!-- Grammar Section -->
+            <section id="grammar" class="content-section active space-y-10">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h2 class="text-3xl font-bold text-amber-800 mb-6">I. Thì Hiện Tại Đơn (Present Simple Tense)</h2>
+                    <p class="text-lg mb-6">Thì hiện tại đơn dùng để diễn tả một **chân lí, sự thật hiển nhiên** hoặc một **thói quen, hành động xảy ra thường xuyên** ở hiện tại.</p>
+                    
+                    <h3 class="text-2xl font-semibold text-gray-700 mb-4">1. Động từ "TO BE" (am/is/are)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-amber-50">
+                                <tr>
+                                    <th class="p-4 font-semibold">Loại câu</th>
+                                    <th class="p-4 font-semibold">Chủ ngữ (S)</th>
+                                    <th class="p-4 font-semibold">Công thức</th>
+                                    <th class="p-4 font-semibold">Ví dụ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b"><td class="p-4 font-bold align-top" rowspan="3">(+) Khẳng định</td><td class="p-4">I</td><td class="p-4 font-mono">am + ...</td><td class="p-4">I <span class="font-bold">am</span> a pupil.</td></tr>
+                                <tr class="border-b"><td class="p-4">He/ She/ It</td><td class="p-4 font-mono">is + ...</td><td class="p-4">She <span class="font-bold">is</span> a teacher.</td></tr>
+                                <tr class="border-b"><td class="p-4">You/ We/ They</td><td class="p-4 font-mono">are + ...</td><td class="p-4">They <span class="font-bold">are</span> doctors.</td></tr>
+                                
+                                <tr class="border-b"><td class="p-4 font-bold align-top" rowspan="3">(-) Phủ định</td><td class="p-4">I</td><td class="p-4 font-mono">am not + ...</td><td class="p-4">I <span class="font-bold">am not</span> a student.</td></tr>
+                                <tr class="border-b"><td class="p-4">He/ She/ It</td><td class="p-4 font-mono">is not (isn't) + ...</td><td class="p-4">He <span class="font-bold">isn't</span> happy.</td></tr>
+                                <tr class="border-b"><td class="p-4">You/ We/ They</td><td class="p-4 font-mono">are not (aren't) + ...</td><td class="p-4">We <span class="font-bold">aren't</span> late.</td></tr>
+
+                                <tr class="border-b"><td class="p-4 font-bold align-top" rowspan="3">(?) Nghi vấn</td><td class="p-4">I</td><td class="p-4 font-mono">Am + I + ...?</td><td class="p-4"><span class="font-bold">Am</span> I right?</td></tr>
+                                <tr class="border-b"><td class="p-4">He/ She/ It</td><td class="p-4 font-mono">Is + S + ...?</td><td class="p-4"><span class="font-bold">Is</span> she a teacher?</td></tr>
+                                <tr><td class="p-4">You/ We/ They</td><td class="p-4 font-mono">Are + S + ...?</td><td class="p-4"><span class="font-bold">Are</span> you ready?</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h3 class="text-2xl font-semibold text-gray-700 mb-4">2. Động từ thường (Action Verbs)</h3>
+                    <div class="overflow-x-auto">
+                         <table class="w-full text-left border-collapse">
+                            <thead class="bg-amber-50">
+                                <tr>
+                                    <th class="p-4 font-semibold">Loại câu</th>
+                                    <th class="p-4 font-semibold">Chủ ngữ (S)</th>
+                                    <th class="p-4 font-semibold">Công thức</th>
+                                    <th class="p-4 font-semibold">Ví dụ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b"><td class="p-4 font-bold align-top" rowspan="2">(+) Khẳng định</td><td class="p-4">I/ You/ We/ They</td><td class="p-4 font-mono">V (nguyên mẫu)</td><td class="p-4">They <span class="font-bold">live</span> in Hanoi.</td></tr>
+                                <tr class="border-b"><td class="p-4">He/ She/ It</td><td class="p-4 font-mono">V-s/es</td><td class="p-4">She <span class="font-bold">works</span> in an office.</td></tr>
+                                
+                                <tr class="border-b"><td class="p-4 font-bold align-top" rowspan="2">(-) Phủ định</td><td class="p-4">I/ You/ We/ They</td><td class="p-4 font-mono">do not (don't) + V</td><td class="p-4">I <span class="font-bold">don't have</span> a car.</td></tr>
+                                <tr class="border-b"><td class="p-4">He/ She/ It</td><td class="p-4 font-mono">does not (doesn't) + V</td><td class="p-4">He <span class="font-bold">doesn't go</span> to school on Sundays.</td></tr>
+
+                                <tr class="border-b"><td class="p-4 font-bold align-top" rowspan="2">(?) Nghi vấn</td><td class="p-4">I/ You/ We/ They</td><td class="p-4 font-mono">Do + S + V?</td><td class="p-4"><span class="font-bold">Do</span> you <span class="font-bold">speak</span> English?</td></tr>
+                                <tr><td class="p-4">He/ She/ It</td><td class="p-4 font-mono">Does + S + V?</td><td class="p-4"><span class="font-bold">Does</span> she <span class="font-bold">watch</span> TV?</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h3 class="text-2xl font-semibold text-gray-700 mb-4">3. Cách thêm "s/es" sau động từ (với He/She/It)</h3>
+                    <ul class="space-y-4 list-disc list-inside text-lg">
+                        <li>Thông thường, ta thêm <span class="font-bold text-amber-700">"s"</span>. (Ví dụ: work → work<span class="font-bold text-amber-700">s</span>, like → like<span class="font-bold text-amber-700">s</span>)</li>
+                        <li>Động từ tận cùng là <span class="font-bold">-o, -s, -z, -ch, -sh, -x</span>, ta thêm <span class="font-bold text-amber-700">"es"</span>. (Ví dụ: go → go<span class="font-bold text-amber-700">es</span>, watch → watch<span class="font-bold text-amber-700">es</span>, miss → miss<span class="font-bold text-amber-700">es</span>)</li>
+                        <li>Động từ tận cùng là <span class="font-bold">phụ âm + y</span>, ta đổi <span class="font-bold">"y"</span> thành <span class="font-bold text-amber-700">"ies"</span>. (Ví dụ: study → stud<span class="font-bold text-amber-700">ies</span>, cry → cr<span class="font-bold text-amber-700">ies</span>)</li>
+                        <li>Động từ tận cùng là <span class="font-bold">nguyên âm + y</span>, ta giữ nguyên và thêm <span class="font-bold text-amber-700">"s"</span>. (Ví dụ: play → play<span class="font-bold text-amber-700">s</span>, enjoy → enjoy<span class="font-bold text-amber-700">s</span>)</li>
+                    </ul>
+                </div>
+
+            </section>
+
+            <!-- Adverbs Section -->
+            <section id="adverbs" class="content-section">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h2 class="text-3xl font-bold text-amber-800 mb-2">II. Trạng Từ Chỉ Tần Suất (Adverbs of Frequency)</h2>
+                    <p class="text-lg mb-6 text-center">Nhấp vào một thanh trên biểu đồ để xem chi tiết.</p>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="chart-container">
+                            <canvas id="adverbsChart"></canvas>
+                        </div>
+                        <div id="adverb-details" class="bg-amber-50 p-6 rounded-lg min-h-[300px] flex flex-col justify-center">
+                            <h3 id="adverb-name" class="text-2xl font-bold text-amber-700">Always</h3>
+                            <p id="adverb-meaning" class="text-xl mb-4">Luôn luôn (100%)</p>
+                            <p class="text-lg font-semibold mb-2">Ví dụ:</p>
+                            <p id="adverb-example" class="text-lg bg-white p-3 rounded">She <span class="font-bold">always</span> goes to the night club to dance.</p>
+                             <p class="text-lg font-semibold mt-4 mb-2">Vị trí:</p>
+                            <p id="adverb-position" class="text-lg">Đứng <span class="font-bold">trước</span> động từ thường và <span class="font-bold">sau</span> động từ "to be".</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Pronunciation Section -->
+            <section id="pronunciation" class="content-section">
+                <div class="bg-white p-8 rounded-xl shadow-sm">
+                    <h2 class="text-3xl font-bold text-amber-800 mb-6">III. Phát Âm (Pronunciation)</h2>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-amber-50 p-6 rounded-lg">
+                            <h3 class="text-2xl font-bold text-center mb-4">Nguyên âm /a:/</h3>
+                            <p class="mb-4 font-semibold">Cách phát âm:</p>
+                            <ol class="list-decimal list-inside space-y-2 mb-4">
+                                <li>Mở miệng rộng như đang ngáp.</li>
+                                <li>Lưỡi thả lỏng, hạ thấp trong khoang miệng.</li>
+                                <li>Phát âm /a:/ dài và nhẹ.</li>
+                            </ol>
+                            <p class="mb-2 font-semibold">Dấu hiệu nhận biết:</p>
+                             <ul class="list-disc list-inside space-y-2">
+                                <li>Nhóm chữ <span class="font-bold">"ar"</span>: st<span class="font-bold">ar</span>, c<span class="font-bold">ar</span>, ch<span class="font-bold">ar</span>ge, l<span class="font-bold">ar</span>ge.</li>
+                                <li>Một số từ có <span class="font-bold">"au", "ua"</span>: <span class="font-bold">au</span>nt, l<span class="font-bold">au</span>gh, dr<span class="font-bold">au</span>ght.</li>
+                            </ul>
+                        </div>
+                         <div class="bg-blue-50 p-6 rounded-lg">
+                            <h3 class="text-2xl font-bold text-center text-blue-800 mb-4">Nguyên âm /ʌ/</h3>
+                            <p class="mb-4 font-semibold">Cách phát âm:</p>
+                            <ol class="list-decimal list-inside space-y-2 mb-4">
+                                <li>Nâng nhẹ phần thân lưỡi.</li>
+                                <li>Lưỡi thả lỏng, đầu lưỡi hướng xuống.</li>
+                                <li>Phát âm /ʌ/ ngắn, giống âm "ă" trong tiếng Việt.</li>
+                            </ol>
+                            <p class="mb-2 font-semibold">Dấu hiệu nhận biết:</p>
+                             <ul class="list-disc list-inside space-y-2">
+                                <li>Chữ <span class="font-bold">"u"</span> trong từ ngắn: s<span class="font-bold">u</span>n, r<span class="font-bold">u</span>n, b<span class="font-bold">u</span>t, c<span class="font-bold">u</span>p.</li>
+                                <li>Chữ <span class="font-bold">"o"</span> trong âm tiết được nhấn mạnh: c<span class="font-bold">o</span>me, l<span class="font-bold">o</span>ve, m<span class="font-bold">o</span>ther, s<span class="font-bold">o</span>me.</li>
+                                <li>Nhóm chữ <span class="font-bold">"ou"</span>: y<span class="font-bold">ou</span>ng, en<span class="font-bold">ou</span>gh, c<span class="font-bold">ou</span>ntry.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Practice Section -->
+            <section id="practice" class="content-section">
+                <div class="bg-white p-8 rounded-xl shadow-sm mb-8">
+                    <h2 class="text-3xl font-bold text-amber-800 mb-6">IV. Luyện Tập</h2>
+                    <h3 class="text-2xl font-semibold text-gray-700 mb-4">Bài 1: Chia động từ trong ngoặc (Thì Hiện Tại Đơn)</h3>
+                    <div id="exercise1" class="space-y-4">
+                        <div class="ex-item">1. My mother (be) <input type="text" class="exercise-input w-32" data-answer="is"> a great cook. <span class="feedback-text ml-2"></span></div>
+                        <div class="ex-item">2. They (not live) <input type="text" class="exercise-input w-32" data-answer="don't live"> in London. <span class="feedback-text ml-2"></span></div>
+                        <div class="ex-item">3. He (go) <input type="text" class="exercise-input w-32" data-answer="goes"> to the gym three times a week. <span class="feedback-text ml-2"></span></div>
+                        <div class="ex-item">4. My dad (watch) <input type="text" class="exercise-input w-32" data-answer="watches"> the news every night. <span class="feedback-text ml-2"></span></div>
+                        <div class="ex-item">5. The Earth (move) <input type="text" class="exercise-input w-32" data-answer="moves"> around the Sun. <span class="feedback-text ml-2"></span></div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-xl shadow-sm mb-8">
+                    <h3 class="text-2xl font-semibold text-gray-700 mb-4">Bài 2: Thử thách phát âm</h3>
+                    <p class="mb-4">Nhấp vào mỗi từ để phân loại vào đúng cột phát âm /a:/ hoặc /ʌ/.</p>
+                    <div id="sort-words" class="flex flex-wrap gap-3 p-4 bg-gray-100 rounded-lg justify-center mb-4">
+                        <span class="sort-word bg-white p-2 rounded shadow-sm">start</span>
+                        <span class="sort-word bg-white p-2 rounded shadow-sm">cup</span>
+                        <span class="sort-word bg-white p-2 rounded shadow-sm">monkey</span>
+                        <span class="sort-word bg-white p-2 rounded shadow-sm">aunt</span>
+                        <span class="sort-word bg-white p-2 rounded shadow-sm">fast</span>
+                        <span class="sort-word bg-white p-2 rounded shadow-sm">done</span>
+                        <span class="sort-word bg-white p-2 rounded shadow-sm">mother</span>
+                        <span class="sort-word bg-white p-2 rounded shadow-sm">garden</span>
+                        <span class="sort-word bg-white p-2 rounded shadow-sm">large</span>
+                        <span class="sort-word bg-white p-2 rounded shadow-sm">truck</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="font-bold text-center text-lg p-2 bg-amber-100 rounded-t-lg">Âm /a:/</h4>
+                            <div id="box-a" data-sound="/a:/" class="sort-box min-h-[150px] bg-amber-50 p-3 rounded-b-lg flex flex-wrap gap-2 content-start"></div>
+                        </div>
+                         <div>
+                            <h4 class="font-bold text-center text-lg p-2 bg-blue-100 rounded-t-lg">Âm /ʌ/</h4>
+                            <div id="box-b" data-sound="/ʌ/" class="sort-box min-h-[150px] bg-blue-50 p-3 rounded-b-lg flex flex-wrap gap-2 content-start"></div>
+                        </div>
+                    </div>
+                    <div id="sort-feedback" class="mt-2 text-center font-medium"></div>
+                </div>
+
+                <div class="text-center mt-8">
+                    <button id="check-answers-btn" class="bg-amber-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-amber-700 transition">Kiểm Tra</button>
+                    <button id="reset-btn" class="bg-gray-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600 transition ml-4">Làm Lại</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const tabs = document.querySelectorAll('.tab-btn');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(item => item.classList.remove('active'));
+                tab.classList.add('active');
+
+                const target = tab.getAttribute('data-tab');
+                contentSections.forEach(section => {
+                    section.classList.remove('active');
+                    if (section.id === target) {
+                        section.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // Adverbs Chart
+        const adverbsData = [
+            { adverb: 'Always', meaning: 'Luôn luôn', percent: 100, example: 'She <strong>always</strong> goes to the night club to dance.' },
+            { adverb: 'Usually', meaning: 'Thường xuyên', percent: 90, example: 'They <strong>usually</strong> quarrel.' },
+            { adverb: 'Normally', meaning: 'Bình thường', percent: 80, example: 'I <strong>normally</strong> go to the gym.' },
+            { adverb: 'Often', meaning: 'Thường', percent: 70, example: 'They <strong>often</strong> go out for dinner.' },
+            { adverb: 'Sometimes', meaning: 'Thỉnh thoảng', percent: 50, example: 'I <strong>sometimes</strong> go with my husband.' },
+            { adverb: 'Occasionally', meaning: 'Đôi khi', percent: 30, example: 'I <strong>occasionally</strong> eat junk food.' },
+            { adverb: 'Seldom', meaning: 'Hiếm khi', percent: 10, example: 'I <strong>seldom</strong> read the newspaper.' },
+            { adverb: 'Hardly ever', meaning: 'Hầu như không', percent: 5, example: 'I <strong>hardly ever</strong> go to the cinema.' },
+            { adverb: 'Never', meaning: 'Không bao giờ', percent: 0, example: 'I <strong>never</strong> drink alcohol.' }
+        ];
+
+        const ctx = document.getElementById('adverbsChart').getContext('2d');
+        const adverbsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: adverbsData.map(d => d.adverb),
+                datasets: [{
+                    label: 'Mức độ thường xuyên (%)',
+                    data: adverbsData.map(d => d.percent),
+                    backgroundColor: 'rgba(217, 119, 6, 0.6)',
+                    borderColor: 'rgba(217, 119, 6, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.raw}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                },
+                onClick: (event, elements) => {
+                    if (elements.length > 0) {
+                        const index = elements[0].index;
+                        const data = adverbsData[index];
+                        document.getElementById('adverb-name').textContent = data.adverb;
+                        document.getElementById('adverb-meaning').textContent = `${data.meaning} (${data.percent}%)`;
+                        document.getElementById('adverb-example').innerHTML = data.example;
+                    }
+                }
+            }
+        });
+
+        // Pronunciation Sort
+        const wordData = {
+            'start': '/a:/', 'cup': '/ʌ/', 'monkey': '/ʌ/', 'aunt': '/a:/',
+            'fast': '/a:/', 'done': '/ʌ/', 'mother': '/ʌ/', 'garden': '/a:/',
+            'large': '/a:/', 'truck': '/ʌ/'
+        };
+        const sortWordsContainer = document.getElementById('sort-words');
+        const sortBoxes = document.querySelectorAll('.sort-box');
+        let selectedWord = null;
+
+        sortWordsContainer.addEventListener('click', (e) => {
+             if (e.target.classList.contains('sort-word')) {
+                if(selectedWord) selectedWord.classList.remove('ring-2', 'ring-amber-500');
+                selectedWord = e.target;
+                selectedWord.classList.add('ring-2', 'ring-amber-500');
+            }
+        });
+
+        sortBoxes.forEach(box => {
+            box.addEventListener('click', () => {
+                if(selectedWord) {
+                    box.appendChild(selectedWord);
+                    selectedWord.classList.remove('ring-2', 'ring-amber-500');
+                    selectedWord = null;
+                }
+            });
+        });
+
+        // Check Answers
+        document.getElementById('check-answers-btn').addEventListener('click', () => {
+            // Exercise 1
+            const ex1Items = document.querySelectorAll('#exercise1 .ex-item');
+            ex1Items.forEach(item => {
+                const input = item.querySelector('.exercise-input');
+                const feedback = item.querySelector('.feedback-text');
+                const userAnswer = input.value.trim().toLowerCase();
+                const correctAnswer = input.dataset.answer.toLowerCase();
+
+                input.classList.remove('correct', 'incorrect');
+                if (userAnswer === correctAnswer) {
+                    input.classList.add('correct');
+                    feedback.textContent = 'Chính xác!';
+                    feedback.className = 'feedback-text ml-2 correct';
+                } else {
+                    input.classList.add('incorrect');
+                    feedback.textContent = `Sai rồi! Đáp án: ${input.dataset.answer}`;
+                    feedback.className = 'feedback-text ml-2 incorrect';
+                }
+            });
+
+            // Exercise 2
+            let allCorrect = true;
+            sortBoxes.forEach(box => {
+                const sound = box.dataset.sound;
+                const words = box.querySelectorAll('.sort-word');
+                words.forEach(word => {
+                    const wordText = word.textContent;
+                    word.classList.remove('bg-green-200', 'bg-red-200');
+                    if(wordData[wordText] === sound) {
+                        word.classList.add('bg-green-200');
+                    } else {
+                        word.classList.add('bg-red-200');
+                        allCorrect = false;
+                    }
+                })
+            });
+            const sortFeedback = document.getElementById('sort-feedback');
+            if (allCorrect && document.getElementById('box-a').children.length + document.getElementById('box-b').children.length === Object.keys(wordData).length) {
+                sortFeedback.textContent = "Tuyệt vời, bạn đã phân loại đúng hết!";
+                sortFeedback.className = "mt-2 text-center font-medium text-green-700";
+            } else {
+                 sortFeedback.textContent = "Hãy kiểm tra lại các từ màu đỏ nhé!";
+                 sortFeedback.className = "mt-2 text-center font-medium text-red-700";
+            }
+
+        });
+
+        // Reset
+        document.getElementById('reset-btn').addEventListener('click', () => {
+            // Ex 1
+            const inputs = document.querySelectorAll('.exercise-input');
+            inputs.forEach(input => {
+                input.value = '';
+                input.classList.remove('correct', 'incorrect');
+                input.parentElement.querySelector('.feedback-text').textContent = '';
+            });
+
+            // Ex 2
+            const words = document.querySelectorAll('.sort-word');
+            words.forEach(word => {
+                word.classList.remove('bg-green-200', 'bg-red-200');
+                sortWordsContainer.appendChild(word);
+            });
+            document.getElementById('sort-feedback').textContent = '';
+        });
+
+    </script>
+</body>
+</html>
